@@ -74,5 +74,5 @@ class projetoLT:
         asc_file_handle.close()
         new_asc_handle.close()
         self.raw = self.asc.replace(".asc", ".raw")
-        self.resultado = ltspice.Ltspice(self.raw)
+        self.resultado = []
         self.executado = False
