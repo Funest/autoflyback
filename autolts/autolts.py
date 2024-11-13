@@ -6,7 +6,7 @@ import ltspice
 import time
 
 # Localização padrão do LTspice (modificar a variável se for outro local)
-ltspice_exe_path = os.path.expanduser("~/AppData/Local/Programs/ADI/LTspice/LTspice.exe")
+ltspice_exe_path = os.path.abspath("C:\\Program Files\\LTC\LTspiceXVII\\XVIIx64.exe")
 
 class projetoLT:
     # asc = caminho até o arquivo .asc da simulação
@@ -32,7 +32,7 @@ class projetoLT:
         if not os.path.exists(self.asc):
             nome_proj = self.asc
         else:
-            nome_proj = f"{os.path.basename(self.asc).replace(".asc", "")} ({self.asc})"
+            nome_proj = f"{os.path.basename(self.asc).replace('.asc', '')} ({self.asc})"   
         return f"{nome_proj}, {executext}."
     
     def abrir(self):

@@ -44,3 +44,22 @@ lt.executar()
 desenhar(lt)
 
 plt.show()
+
+disps = {"M1": []}
+
+# Abrir o arquivo e ler todas as chaves
+with open("./exemplos/modificacao_simples/chaves.txt", "r") as arquivo:
+    for linha in arquivo:
+        linha = linha.strip()  
+        if linha: 
+            disps["M1"].append(linha) 
+
+# Iteração de modificação das chaves e seus valores
+for id_disp, valores_disp in disps.items():  #
+    for valor_disp in valores_disp:  
+        disps[id_disp] = valor_disp
+        lt.modificar(disps, pars)
+        lt.executar()            
+        desenhar(lt)             
+        plt.savefig(f"{id_disp}_{valor_disp}.png")  
+        plt.close()  
