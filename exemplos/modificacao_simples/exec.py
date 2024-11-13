@@ -1,7 +1,7 @@
 import sys
 
 # Raiz do repositório para acessar os scripts
-sys.path.append('../..')
+sys.path.append('.')
 
 # import
 import autolts.autolts as alts
@@ -31,7 +31,7 @@ def desenhar(proj:alts.projetoLT):
     plt.hlines(vo_med, t[0], t[-1], 'k', linestyles='--')
 
 # Execução do projeto definido no arquivo asc:
-lt = alts.projetoLT("./LTspice/Draft1.asc")
+lt = alts.projetoLT("./exemplos/modificacao_simples/LTspice/Draft1.asc")
 lt.executar()
 desenhar(lt)
 
