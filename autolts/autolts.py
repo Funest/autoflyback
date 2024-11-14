@@ -63,8 +63,12 @@ class projetoLT:
                 if padrao_inst and (padrao_inst.group(1) in dispositivos.keys()):
                     new_asc_handle.write(linha)
                     prox_linha = next(asc_file_handle)
+                    padrao_value = re.match(r'^SYMATTR\s+Value', prox_linha)
                     newValueLine = f"SYMATTR Value {dispositivos[padrao_inst.group(1)]}\n"
                     new_asc_handle.write(newValueLine)
+                    if not padrao_value:
+                        new_asc_handle.write(prox_linha)
+                        
                 elif padrao_param:
                     nova_linha = linha
                     for par in parametros.keys():
