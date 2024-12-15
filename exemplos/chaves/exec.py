@@ -39,12 +39,6 @@ def imprimir_potencias(proj:alts.projetoLT):
 base = "./exemplos/chaves"
 boost = alts.projetoLT(f"{base}/LTspice/boost.asc")
 
-arq_trans = open(f"{base}/entradas/mosfets", "r")
-arq_diodos = open(f"{base}/entradas/diodos", "r")
-arq_trans.close()
-arq_diodos.close()
-
-
 class Resultado:
     def __init__(self, chaves:list[proc.Dispositivo], eficiencia:float, dens_pot:float):
         self.chaves = chaves

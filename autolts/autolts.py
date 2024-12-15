@@ -4,6 +4,8 @@ import re
 import os
 import ltspice
 import time
+import multiprocessing as mltp
+from pathlib import Path
 
 # Localização padrão do LTspice (modificar a variável se for outro local)
 ltspice_exe_path = os.path.expanduser("~/AppData/Local/Programs/ADI/LTspice/LTspice.exe")
@@ -39,10 +41,10 @@ class projetoLT:
         subprocess.run([ltspice_exe_path, self.asc])
     
     def executar(self):
-        subprocess.run([ltspice_exe_path, "-b", "-Run", self.asc])
+        resultado = somenteExecutar(self.asc)
         self.executado = True
         if not self.resultado:
-            self.resultado = ltspice.Ltspice(self.raw)
+            self.resultado = resultado
         self.resultado.parse()
 
     # Duas coisas necessárias para modificar um dispositivo:
@@ -51,10 +53,15 @@ class projetoLT:
     # Parâmetros (Nome=Valor):
     # - Nome; e 
     # - Valor
-    def modificar(self, dispositivos:dict, parametros:dict={}, sufixo:str="_new"):
+    # Solução: dicionario[nome] = valor
+    def novoAsc(self, dispositivos:dict={}, parametros:dict={}, sufixo:str="_new", new_path:str=None):
         asc_file_handle = open(self.asc_old, "r")
-        self.asc = self.asc_old.replace(".asc", sufixo + ".asc")
-        new_asc_handle = open(self.asc, "w")
+        new_file = self.asc_old.replace(".asc", sufixo + ".asc")
+        if new_path:
+            filename = os.path.basename(new_file)
+            new_file = f'{new_path}/{filename}'
+            Path(new_path).mkdir(parents=True, exist_ok=True)
+        new_asc_handle = open(new_file, "w")
         searchPatternInstName = rf"^SYMATTR\s+InstName\s+(\S+)\s*$"
         searchPatternParam = rf"^TEXT.*?\.param.*?$"
         for linha in asc_file_handle:
@@ -78,9 +85,74 @@ class projetoLT:
                     new_asc_handle.write(linha)
         asc_file_handle.close()
         new_asc_handle.close()
-        self.raw = self.asc.replace(".asc", ".raw")
+        return new_file
+    
+    def modificar(self, dispositivos:dict={}, parametros:dict={}, sufixo:str="_new"):
+        new_asc = self.novoAsc(dispositivos, parametros, sufixo)
+        self.asc = new_asc
+        self.raw = new_asc.replace(".asc", ".raw")
         self.resultado = []
         self.executado = False
+
+    # Dado um dicionário[dispositivo] = [val1, val2, ...], executa n_proc simulações em paralelo,
+    #   a fim de reduzir o tempo de uma batelada de simulações
+    #   retorna uma lista de Ltspice do pacote ltspice
+    def processamentoParalelo(self, n_proc:int, dispositivos:dict={}, parametros:dict={},
+                              sufixo:str='_new', new_path:str=None, quiet=False) -> ltspice.Ltspice:
+        arquivos, status = self.gerarModificados(dispositivos, parametros, sufixo, new_path=new_path, quiet=quiet)
+        if not status:
+            print("Algo deu errado. Abortando.")
+            return
+        return executarParalelo(arquivos, n_proc)
+    
+    def gerarModificados(self, dispositivos:dict={}, parametros:dict={}, sufixo='_new', 
+                         new_path:str=None, quiet=False):
+        ## Obtém o tamanho dos elementos dos dicionários e acusa um erro se diferirem 
+        # (-1 é usado para o dicionario vazio), o qual é permitido para apenas uma das entradas de cada vez
+        def tamanhoUnanime(dicionario:dict):
+            size = -1
+            for key in dicionario:
+                size_i = len(dicionario[key])
+                if size < 0:
+                    size = size_i
+                elif size != size_i:
+                    return 0
+            return size
+    
+        tam_disps = tamanhoUnanime(dispositivos)
+        tam_param = tamanhoUnanime(parametros)
+
+        if not tam_disps or not tam_param or ((tam_disps > 0 and tam_param > 0) and tam_disps != tam_param):
+            print(f'Erro: Número de valores para cada parâmetro e dispositivo diferem ou são itens vazios. Abortando.')
+            return [], False
+        elif (tam_disps < 0 and tam_param < 0):
+            print(f"Erro: Nada a modificar. Abortando.")
+            return [], False
+        
+        # Se nenhum for -1, são iguais, N1 = N2 = N > 0, então max(N1, N2) = N
+        # Se um for -1, e o outro é N > 0 > -1, então max(N, -1) = N
+        # Ambos sendo -1 são pegos no elif acima, e N != -1 nunca é negativo pois vem de len(.)
+        # N1 != N2 > 0 é pego no if acima
+        numero_valores = max(tam_disps, tam_param)
+        ## Fim da verificação de tamanhos
+        if not quiet:
+            print('----------------------------------------')
+            print('Arquivos gerados:')
+        ascs = []
+        for k in range(numero_valores):
+            disp_k = {key: dispositivos[key][k] for key in dispositivos}
+            param_k = {key: parametros[key][k] for key in parametros}
+            suf_k = sufixo + f'_{k}'
+            asc_novo = self.novoAsc(disp_k, param_k, suf_k, new_path=new_path)
+            ascs.append(asc_novo)
+            if not quiet:
+                print(f'\t-> {asc_novo}:\n\t\t{disp_k}\n\t\t{param_k}')
+        if not quiet:
+            print('----------------------------------------')
+
+        return ascs, True
+
+        
 
 # Função para encontrar o Duty Cycle necessário para uma saída específica:
 # Realiza uma busca binária no intervalo (D_max, D_min), partindo de D_ini, 
@@ -131,3 +203,19 @@ def otimizarDuty(proj:projetoLT, D_ini:float, D_max:float,
         status = False
     else: status = True
     return Vo, D, status
+
+def executarParalelo(arquivos:list[str], n_proc):
+    with mltp.Pool(processes=n_proc) as pool:
+        return pool.map(somenteExecutar, arquivos)
+
+def executarBatelada(arquivos:list[str]):
+    resultados = []
+    for asc in arquivos:
+        resultados.append(somenteExecutar(asc))
+    return resultados
+        
+def somenteExecutar(nome_asc:str):
+    nome_raw = nome_asc.replace('.asc', '.raw')
+    subprocess.run([ltspice_exe_path, "-b", "-Run", nome_asc])
+    print(f'Processado {nome_asc}.')
+    return ltspice.Ltspice(nome_raw)
