@@ -1,0 +1,10 @@
+MOSFET,Manufacturer,Breakdown Voltage,Unit,Rdson,Unit,Qgate,Unit,Coss,Unit,Package
+BSC077N12NS3,Infineon,120,V,7.7,mOhms,65,nC,550,pF,TDSON-8
+BSC240N12NS3,Infineon,120,V,24,mOhms,20,nC,170,pF,TDSON-8
+FDB2532,FairChild,150,V,16,mOhms,82,nC,615,pF,TO-263
+FDB33N25,FairChild,250,V,94,mOhms,37,nC,330,pF,D2-PAK
+IPA105N15N3,Infineon,150,V,10.5,mOhms,41,nC,378,pF,TO-220
+IPB065N15N3,Infineon,150,V,6.5,mOhms,70,nC,640,pF,TO-263
+IPB107N20N3,Infineon,200,V,10.7,mOhms,65,nC,401,pF,TO-263
+IPD320N20N3,Infineon,200,V,32,mOhms,22,nC,135,pF,TO-252
+IRFH5020,International Rectifier,200,V,47,mOhms,36,nC,120,pF,PQFN-5x6

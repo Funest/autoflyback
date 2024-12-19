@@ -1,0 +1,24 @@
+Resultados 20kHz,,,,,,,,
+Modelo,Espiras Primário,Espiras Secundário,L1 (uH),L2 (uH),Fator Preenchimento,Perdas (W),Elevação (º),Volume (mm3)
+EE42/20,11,57,48.4,1299.6,0.24,33.9,4.1,23300
+EE55/21,8,38,57.6,1299.6,0.14,3.3,0.4,42500
+,,,,,,,,
+Resultados 40kHz,,,,,,,,
+Modelo,Espiras Primário,Espiras Secundário,L1 (uH),L2 (uH),Fator Preenchimento,Perdas (W),Elevação (º),Volume (mm3)
+EE42/15,8,38,29.44,664.24,0.16,3.8,0.7,17600
+EE55/21,4,19,28.8,649.8,0.13,2.8,0.3,42500
+,,,,,,,,
+Resultados 60kHz,,,,,,,,
+Modelo,Espiras Primário,Espiras Secundário,L1 (uH),L2 (uH),Fator Preenchimento,Perdas (W),Elevação (º),Volume (mm3)
+EE30/14,8,38,19.84,447.64,0.2,16.5,2.3,8174
+EE42/20,4,19,19.2,433.2,0.16,3,0.5,23300
+,,,,,,,,
+Resultados 80kHz,,,,,,,,
+Modelo,Espiras Primário,Espiras Secundário,L1 (uH),L2 (uH),Fator Preenchimento,Perdas (W),Elevação (º),Volume (mm3)
+EE30/14,6,28,15.12,329.28,0.21,3.3,0.6,8174
+EE42/15,4,19,15.04,339.34,0.18,3.1,0.6,17600
+,,,,,,,,
+Resultados100kHz,,,,,,,,
+Modelo,Espiras Primário,Espiras Secundário,L1 (uH),L2 (uH),Fator Preenchimento,Perdas (W),Elevação (º),Volume (mm3)
+EE30/7,9,47,9.72,265.08,0.26,28.5,6.5,4000
+EE30/14,5,23,12.5,264.5,0.23,3.3,0.6,8174

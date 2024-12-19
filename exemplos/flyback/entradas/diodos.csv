@@ -1,0 +1,7 @@
+DIODE,Manufacturer,Breakdown Voltage,Unit,Average Forwared Current,Unit,Type,Package
+RF1501TF3S,Rohm,350,V,20,A,Silicon,TO-220
+RFN10NS4S,Rohm,430,V,10,A,Silicon,TO-263
+RFS30TZ6S,Rohm,650,V,30,A,Silicon,TO-247
+RFV15TG6S,Rohm,600,V,15,A,Silicon,TO-220
+VS-E5PX3006,Vishay,600,V,30,A,Fast Recovery,TO-247
+VS-E5TX1506,Vishay,600,V,15,A,Fast Recovery,TO-220

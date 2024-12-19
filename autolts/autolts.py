@@ -104,6 +104,14 @@ class projetoLT:
             print("Algo deu errado. Abortando.")
             return
         return executarParalelo(arquivos, n_proc)
+
+    def processamentoBatelada(self, dispositivos:dict={}, parametros:dict={},
+                              sufixo:str='_new', new_path:str=None, quiet=False) -> ltspice.Ltspice:
+        arquivos, status = self.gerarModificados(dispositivos, parametros, sufixo, new_path=new_path, quiet=quiet)
+        if not status:
+            print("Algo deu errado. Abortando.")
+            return
+        return executarBatelada(arquivos)
     
     def gerarModificados(self, dispositivos:dict={}, parametros:dict={}, sufixo='_new', 
                          new_path:str=None, quiet=False):
@@ -177,11 +185,12 @@ def otimizarDuty(proj:projetoLT, D_ini:float, D_max:float,
         print(f'Iteração {i + 1}: D = {D:.6f}') if not quiet else None
         inicio_iter = time.time()
         pars = {D_name: f'{D:.6f}'}
-        proj.modificar({}, pars)
-        proj.executar()
+        novo_asc = proj.novoAsc({}, pars, sufixo="_D")
+        saida = somenteExecutar(novo_asc, quiet=True)
         fim_iter = time.time()
         print(f'Demorou {fim_iter - inicio_iter:.2f} s, total {fim_iter - inicio_proc:.2f} s') if not quiet else None
-        vo_vec = proj.resultado.get_data(vo_name)
+        saida.parse()
+        vo_vec = saida.get_data(vo_name)
         Vo = vo_vec.mean()
         eVo = Vo - Vo_alvo
         print(f'Vo = {Vo} V, eVo = {eVo} V') if not quiet else None
@@ -197,12 +206,12 @@ def otimizarDuty(proj:projetoLT, D_ini:float, D_max:float,
         print(f'Novo D = {D:.6f}') if not quiet else None
     fim_proc = time.time()
     print(f'Tempo total: {fim_proc - inicio_proc:.2f} s') if not quiet else None
-    if (abs(eVo) > epsilon) and not quiet:
-        print('Não foi possível atingir o Vo desejado.')
-        print(f'Vo = {Vo} V, eVo = {eVo} V = {eVo/Vo*100:.2f} %')
+    if (abs(eVo) > epsilon):
+        print('Não foi possível atingir o Vo desejado.') if not quiet else None
+        print(f'Vo = {Vo} V, eVo = {eVo} V = {eVo/Vo*100:.2f} %') if not quiet else None
         status = False
     else: status = True
-    return Vo, D, status
+    return novo_asc, Vo, D, status, i+1
 
 def executarParalelo(arquivos:list[str], n_proc):
     with mltp.Pool(processes=n_proc) as pool:
@@ -214,8 +223,8 @@ def executarBatelada(arquivos:list[str]):
         resultados.append(somenteExecutar(asc))
     return resultados
         
-def somenteExecutar(nome_asc:str):
+def somenteExecutar(nome_asc:str, quiet=False):
     nome_raw = nome_asc.replace('.asc', '.raw')
     subprocess.run([ltspice_exe_path, "-b", "-Run", nome_asc])
-    print(f'Processado {nome_asc}.')
+    print(f'Processado {nome_asc}.') if not quiet else None
     return ltspice.Ltspice(nome_raw)
