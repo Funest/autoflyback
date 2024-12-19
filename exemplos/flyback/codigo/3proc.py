@@ -1,3 +1,6 @@
+## Processa todos os arquivos pipeline/*_D.raw
+##   Salva para cada um, o Vout e as potências nos resistores de snubber e amortecimento, nas chaves e de entrada/saída
+##   O resultado é escrito em saidas/tabela.csv
 import sys
 
 # Raiz do repositório para acessar os scripts

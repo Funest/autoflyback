@@ -1,3 +1,5 @@
+## Executa cada um dos ascs na pasta pipeline/
+##   encontrando o duty cycle certo (*_D.asc), gerando os raws (*_D.raw)
 import sys
 
 # Raiz do repositório para acessar os scripts

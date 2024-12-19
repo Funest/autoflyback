@@ -1,3 +1,7 @@
+## Calcula os componentes passivos e cria os .ascs de acordo com a informação nos csvs na pasta entrada/
+##   Salvando os ascs gerados na pasta pipeline/ (pasta de arquivos transitórios) 
+##   Salva também uma legenda (em .txt e em .csv) na pasta saidas/
+
 import sys
 
 # Raiz do repositório para acessar os scripts
