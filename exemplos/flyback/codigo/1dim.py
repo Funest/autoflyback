@@ -161,6 +161,7 @@ for ind in indutores:
     else:
         Co = Io**2 * ( (1+especificacoes['D']) / (1 - especificacoes['D']) / (N1porN2) )**2 * ind.L1 / (2 * especificacoes['Vo'] * (especificacoes['Dvo'] - Dvo_R))
         print(f'Co = {Co:.3e} F')
+
     for mos in mosfets:
         #### Dimensionamento do circuito de clamp
         L1leak = leak*ind.L1
